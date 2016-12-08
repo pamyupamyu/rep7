@@ -149,8 +149,9 @@ public class Planner {
 						//newOperator = newOperator.instantiate(theBinding);
 						System.out.println(newOperator.name);
 						if(newOperator.applyStatecheck(theCurrentState, theBinding)){
-							System.out.println("チェックは正常終了した○○○○");
-							plan.addElement(newOperator);
+							System.out.println("planに書き足した");
+							System.out.println(newOperator.instantiate(theBinding).name);
+							plan.addElement(newOperator.instantiate(theBinding));
 							theCurrentState =
 									newOperator.applyState(theCurrentState,theBinding);
 							System.out.println(theCurrentState);
@@ -210,11 +211,11 @@ public class Planner {
 						theCurrentState.removeAllElements();
 						for(int k = 0 ; k < orgState.size() ; k++){
 							theCurrentState.addElement(orgState.elementAt(k));
-*/						}
+					}
 						plan.removeAllElements();
 						for(int k = 0 ; k < orgPlan.size() ; k++){
 							plan.addElement(orgPlan.elementAt(k));
-
+*/
 						}
 					}
 				}
@@ -250,6 +251,8 @@ public class Planner {
 		Vector goalList = new Vector();
 		goalList.addElement("B on C");
 		goalList.addElement("A on B");
+		goalList.addElement("ontable C");
+		goalList.addElement("handEmpty");
 		return goalList;
 	}
 
