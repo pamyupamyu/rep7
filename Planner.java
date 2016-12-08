@@ -150,7 +150,7 @@ public class Planner {
 						System.out.println(newOperator.name);
 						if(newOperator.applyStatecheck(theCurrentState, theBinding)){
 							System.out.println("チェックは正常終了した○○○○");
-							plan.addElement(newOperator.instantiate(theBinding));
+							plan.addElement(newOperator);
 							theCurrentState =
 									newOperator.applyState(theCurrentState,theBinding);
 							System.out.println(theCurrentState);
@@ -165,7 +165,7 @@ public class Planner {
 
 							for(int k = 0 ; k < vars.size(); k++){
 
-								theBinding.remove(vars.elementAt(k));
+								theBinding.remove(newOperator);
 
 							}
 
@@ -183,19 +183,19 @@ public class Planner {
 							for(int k = 0 ; k < orgState.size() ; k++){
 								theCurrentState.addElement(orgState.elementAt(k));
 							}
+
 							plan.removeAllElements();
 							for(int k = 0 ; k < orgPlan.size() ; k++){
 								plan.addElement(orgPlan.elementAt(k));
 							}
-							*/
+*/
 						}
 					} else {
 						// 失敗したら元に戻す．
-
+						System.out.println("###############aghhhhhh################");
 						Vector vars = new Vector();
 						String aName = (String)newOperator.name;
 						getVars(aName,vars);
-
 						for(int k = 0 ; k < vars.size(); k++){
 
 							theBinding.remove(vars.elementAt(k));
@@ -210,11 +210,11 @@ public class Planner {
 						theCurrentState.removeAllElements();
 						for(int k = 0 ; k < orgState.size() ; k++){
 							theCurrentState.addElement(orgState.elementAt(k));
-						}
+*/						}
 						plan.removeAllElements();
 						for(int k = 0 ; k < orgPlan.size() ; k++){
 							plan.addElement(orgPlan.elementAt(k));
-*/
+
 						}
 					}
 				}
