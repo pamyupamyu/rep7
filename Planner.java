@@ -150,7 +150,7 @@ public class Planner {
 						System.out.println(newOperator.name);
 						if(newOperator.applyStatecheck(theCurrentState, theBinding)){
 							System.out.println("チェックは正常終了した○○○○");
-							plan.addElement(newOperator);
+							plan.addElement(newOperator.instantiate(theBinding));
 							theCurrentState =
 									newOperator.applyState(theCurrentState,theBinding);
 							System.out.println(theCurrentState);
@@ -160,22 +160,6 @@ public class Planner {
 							// 失敗したら元に戻す．
 
 							Vector vars = new Vector();
-/*							// IfListの変数を集める
-							for(int k = 0 ; k < newOperator.ifList.size() ; k++){
-								String anIf = (String)newOperator.ifList.elementAt(k);
-								getVars(anIf,vars);
-							}
-							// addListの変数を集める
-							for(int k = 0 ; k < newOperator.addList.size() ; k++){
-								String anAdd = (String)addList.elementAt(k);
-								getVars(anAdd,vars);
-							}
-							// deleteListの変数を集める
-							for(int k = 0 ; k < newOperator.deleteList.size() ; k++){
-								String aDelete = (String)newOperator.deleteList.elementAt(k);
-								getVars(aDelete,vars);
-							}
-*/
 							String aName = (String)newOperator.name;
 							getVars(aName,vars);
 
@@ -207,6 +191,16 @@ public class Planner {
 						}
 					} else {
 						// 失敗したら元に戻す．
+
+						Vector vars = new Vector();
+						String aName = (String)newOperator.name;
+						getVars(aName,vars);
+
+						for(int k = 0 ; k < vars.size(); k++){
+
+							theBinding.remove(vars.elementAt(k));
+
+						/*
 						theBinding.clear();
 						for(Enumeration e=orgBinding.keys();e.hasMoreElements();){
 							String key = (String)e.nextElement();
@@ -220,6 +214,7 @@ public class Planner {
 						plan.removeAllElements();
 						for(int k = 0 ; k < orgPlan.size() ; k++){
 							plan.addElement(orgPlan.elementAt(k));
+*/
 						}
 					}
 				}
