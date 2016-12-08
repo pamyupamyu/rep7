@@ -185,8 +185,8 @@ public class Planner {
 		}
 		return index;
 	}
+	//ここまで
 	
-
 	private int planningAGoal(String theGoal,Vector theCurrentState,
 			Hashtable theBinding,int cPoint){
 		System.out.println("**"+theGoal);
