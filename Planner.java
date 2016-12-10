@@ -19,19 +19,21 @@ public class Planner {
 		rand = new Random();
 	}
 	
+	//追加
 	public Vector goalsort(Vector goalList){
 		Vector newgoal = new Vector();
 		ArrayList ontable = new ArrayList();
 		ArrayList xony = new ArrayList();
 		ArrayList clear = new ArrayList();
 		ArrayList hE = new ArrayList();
-		
+		ArrayList poada = new ArrayList();
 		
 		for(int i = 0; i < goalList.size(); ++i){ //ゴールの内容ごとに分類
 			StringTokenizer st = new StringTokenizer((String)goalList.elementAt(i));
 			String tmp = st.nextToken();
 			if(tmp.equals("ontable")){
 				ontable.add((String)goalList.elementAt(i));
+				poada.add(st.nextToken());
 			}else if(tmp.equals("clear")){
 				clear.add((String)goalList.elementAt(i));
 			}else if(tmp.equals("handEmpty")){
@@ -45,7 +47,9 @@ public class Planner {
 			newgoal.add(ontable.get(i));
 		}
 		
-		XonYsort(xony);
+		//System.out.println("before:" + xony);
+		xony = XonYsort(xony,poada);
+		//System.out.println("after:" + xony);
 		
 		for(int i = 0; i < xony.size(); ++i){
 			newgoal.add(xony.get(i));
@@ -60,9 +64,28 @@ public class Planner {
 		return newgoal;
 	}
 	
-	public void XonYsort(ArrayList xony){
+	public ArrayList XonYsort(ArrayList xony,ArrayList poada){
+		ArrayList newxony = new ArrayList();
 		
+		for(int i = 0; i < poada.size(); ++i){
+			for(int j = 0; j < xony.size(); ++j){
+				
+				StringTokenizer st = new StringTokenizer((String)xony.get(j));
+				String X = st.nextToken();
+				st.nextToken();
+				String Y = st.nextToken();
+				if(poada.get(i).equals(Y)){
+					newxony.add((String)xony.get(j));
+					poada.set(i, (String)X);
+					j = -1;
+				}
+			}
+			
+		}
+		
+		return newxony;
 	}
+	//ここまで椙田
 
 	public void start(){
 		initOperators();
@@ -70,6 +93,7 @@ public class Planner {
 		Vector initialState = initInitialState();
 		
 		goalList = goalsort(goalList);
+		//System.out.println(goalList);
 
 		Hashtable theBinding = new Hashtable();
 		plan = new Vector();
@@ -408,14 +432,19 @@ public class Planner {
 
 	private Vector initGoalList(){
 		Vector goalList = new Vector();
+		goalList.addElement("F on G");
 		//goalList.addElement("ontable C");
-		//goalList.addElement("clear A");
-		//goalList.addElement("A on B");
-		goalList.addElement("B on C"); //(下に積む順番にする)
+		goalList.addElement("clear A");
 		goalList.addElement("A on B");
+		goalList.addElement("ontable E");
+		goalList.addElement("B on C"); //(下に積む順番にする)
+		//goalList.addElement("A on B");
+		goalList.addElement("D on E");
+		
 		goalList.addElement("ontable C"); //ゴールの順番大事(?x on ?yより前)
-		goalList.addElement("clear A"); //(?x on ?yの後ろ)
+		//goalList.addElement("clear A"); //(?x on ?yの後ろ)
 		goalList.addElement("handEmpty"); //(最後)
+		goalList.addElement("ontable G");
 		finalgoal = (Vector)goalList.clone();
 		return goalList;
 	}
@@ -425,12 +454,19 @@ public class Planner {
 		//initialState.addElement("clear A");
 		initialState.addElement("clear B");
 		//initialState.addElement("clear C");
-
+		initialState.addElement("clear G");
+		
 		initialState.addElement("ontable A");
 		//initialState.addElement("ontable B");
 		//initialState.addElement("ontable C");
+		initialState.addElement("ontable D");
+		
 		initialState.addElement("B on C");
 		initialState.addElement("C on A");
+		//initialState.addElement("D on B");
+		initialState.addElement("E on D");
+		initialState.addElement("F on E");
+		initialState.addElement("G on F");
 		initialState.addElement("handEmpty");
 		return initialState;
 	}
