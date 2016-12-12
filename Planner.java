@@ -18,7 +18,7 @@ public class Planner {
 	Planner(){
 		rand = new Random();
 	}
-	
+
 	//追加
 	public Vector goalsort(Vector goalList){
 		Vector newgoal = new Vector();
@@ -27,7 +27,7 @@ public class Planner {
 		ArrayList clear = new ArrayList();
 		ArrayList hE = new ArrayList();
 		ArrayList poada = new ArrayList();
-		
+
 		for(int i = 0; i < goalList.size(); ++i){ //ゴールの内容ごとに分類
 			StringTokenizer st = new StringTokenizer((String)goalList.elementAt(i));
 			String tmp = st.nextToken();
@@ -42,15 +42,15 @@ public class Planner {
 				xony.add((String)goalList.elementAt(i));
 			}
 		}
-		
+
 		for(int i = 0; i < ontable.size(); ++i){
 			newgoal.add(ontable.get(i));
 		}
-		
+
 		//System.out.println("before:" + xony);
 		xony = XonYsort(xony,poada);
 		//System.out.println("after:" + xony);
-		
+
 		for(int i = 0; i < xony.size(); ++i){
 			newgoal.add(xony.get(i));
 		}
@@ -60,16 +60,16 @@ public class Planner {
 		for(int i = 0; i < hE.size(); ++i){
 			newgoal.add(hE.get(i));
 		}
-		
+
 		return newgoal;
 	}
-	
+
 	public ArrayList XonYsort(ArrayList xony,ArrayList poada){
 		ArrayList newxony = new ArrayList();
-		
+
 		for(int i = 0; i < poada.size(); ++i){
 			for(int j = 0; j < xony.size(); ++j){
-				
+
 				StringTokenizer st = new StringTokenizer((String)xony.get(j));
 				String X = st.nextToken();
 				st.nextToken();
@@ -80,9 +80,9 @@ public class Planner {
 					j = -1;
 				}
 			}
-			
+
 		}
-		
+
 		return newxony;
 	}
 	//ここまで椙田
@@ -91,7 +91,7 @@ public class Planner {
 		initOperators();
 		Vector goalList     = initGoalList();
 		Vector initialState = initInitialState();
-		
+
 		goalList = goalsort(goalList);
 		//System.out.println(goalList);
 
@@ -186,7 +186,7 @@ public class Planner {
 				return 0;
 			}
 		}
-		
+
 		int index = ConflictResolution(theGoal,theCurrentState);
 		Operator op = (Operator)operators.elementAt(index);
 		operators.removeElementAt(index);
@@ -224,31 +224,20 @@ public class Planner {
 					Vector newGoals = (Vector)newOperator.getIfList();
 					System.out.println(newOperator.name);
 					if(planning(newGoals,theCurrentState,theBinding)){
-						//newOperator = newOperator.instantiate(theBinding);
 						System.out.println(newOperator.name);
+						//追加ここから(島野)
+						//現在状態の更新前に更新可能かチェックする
+						//チェックが成功したら実際に更新する、失敗したら復元をおこなう
 						if(newOperator.applyStatecheck(theCurrentState, theBinding)){
-							System.out.println("チェックは正常終了した○○○○");
+							//System.out.println("チェックは正常終了した○○○○");
 							plan.addElement(newOperator);
 							theCurrentState =
 									newOperator.applyState(theCurrentState,theBinding);
 							System.out.println(theCurrentState);
 							return i+1;
 						}else{
-							System.out.println("チェックは失敗した××××");
+							//System.out.println("チェックは失敗した××××");
 							// 失敗したら元に戻す．
-
-							Vector vars = new Vector();
-							String aName = (String)newOperator.name;
-							getVars(aName,vars);
-
-							for(int k = 0 ; k < vars.size(); k++){
-
-								theBinding.remove(newOperator);
-
-							}
-
-
-							/*
 							theBinding.clear();
 							for(Enumeration e=orgBinding.keys();e.hasMoreElements();){
 								String key = (String)e.nextElement();
@@ -265,19 +254,10 @@ public class Planner {
 							for(int k = 0 ; k < orgPlan.size() ; k++){
 								plan.addElement(orgPlan.elementAt(k));
 							}
-*/
 						}
+						//追加ここまで(島野)
 					} else {
 						// 失敗したら元に戻す．
-						System.out.println("###############aghhhhhh################");
-						Vector vars = new Vector();
-						String aName = (String)newOperator.name;
-						getVars(aName,vars);
-						for(int k = 0 ; k < vars.size(); k++){
-
-							theBinding.remove(vars.elementAt(k));
-
-						/*
 						theBinding.clear();
 						for(Enumeration e=orgBinding.keys();e.hasMoreElements();){
 							String key = (String)e.nextElement();
@@ -287,7 +267,7 @@ public class Planner {
 						theCurrentState.removeAllElements();
 						for(int k = 0 ; k < orgState.size() ; k++){
 							theCurrentState.addElement(orgState.elementAt(k));
-*/						}
+						}
 						plan.removeAllElements();
 						for(int k = 0 ; k < orgPlan.size() ; k++){
 							plan.addElement(orgPlan.elementAt(k));
@@ -300,7 +280,7 @@ public class Planner {
 		return -1;
 	}
 
-	
+
 	/**
 	 * 追加内容
 	 * 競合解消するため、現在の状態と実行に必要な状態がもっとも一致するものを選択
@@ -333,7 +313,7 @@ public class Planner {
 							}else if(s[1].equals("?y")){
 								s[1] = goal[2];
 							}
-							StringBuffer buf = new StringBuffer();	
+							StringBuffer buf = new StringBuffer();
 							buf.append(s[0]);
 							for(int l=1;l<s.length;++l)buf.append(" "+s[l]);
 							ifList.set(k,buf.toString());
@@ -349,7 +329,7 @@ public class Planner {
 								}else if(s.length==2){
 									if(s[1].equals(str[1])) s[1]=goal[1];
 								}
-								StringBuffer buf = new StringBuffer();	
+								StringBuffer buf = new StringBuffer();
 								buf.append(s[0]);
 								for(int l=1;l<s.length;++l)buf.append(" "+s[l]);
 								ifList.set(k,buf.toString());
@@ -403,11 +383,12 @@ public class Planner {
 				}
 			}
 		}
-		
+
 		return index;
 	}
 	//ここまで
 
+	//追加ここから(島野)operatorクラスのをコピーしただけ
 	private Vector getVars(String thePattern,Vector vars){
 		StringTokenizer st = new StringTokenizer(thePattern);
 		for(int i = 0 ; i < st.countTokens();){
@@ -422,6 +403,7 @@ public class Planner {
 		// 先頭が ? なら変数
 		return str1.startsWith("?");
 	}
+	//追加ここまで(島野)
 
 	int uniqueNum = 0;
 	private Operator rename(Operator theOperator){
@@ -440,7 +422,7 @@ public class Planner {
 		goalList.addElement("B on C"); //(下に積む順番にする)
 		//goalList.addElement("A on B");
 		goalList.addElement("D on E");
-		
+
 		goalList.addElement("ontable C"); //ゴールの順番大事(?x on ?yより前)
 		//goalList.addElement("clear A"); //(?x on ?yの後ろ)
 		goalList.addElement("handEmpty"); //(最後)
@@ -455,12 +437,12 @@ public class Planner {
 		initialState.addElement("clear B");
 		//initialState.addElement("clear C");
 		initialState.addElement("clear G");
-		
+
 		initialState.addElement("ontable A");
 		//initialState.addElement("ontable B");
 		//initialState.addElement("ontable C");
 		initialState.addElement("ontable D");
-		
+
 		initialState.addElement("B on C");
 		initialState.addElement("C on A");
 		//initialState.addElement("D on B");
@@ -590,6 +572,8 @@ class Operator{
 		return result;
 	}
 
+	//追加ここから(島野)
+	//現在状態を更新可能か調べる
 	public boolean applyStatecheck(Vector theState,Hashtable theBinding){
 		Vector checkState= (Vector)theState.clone();
 		for(int i = 0 ; i < addList.size() ; i++){
@@ -600,13 +584,16 @@ class Operator{
 		}
 		return true;
 	}
+	//追加ここまで(島野)
 
 
 	public Vector applyState(Vector theState,Hashtable theBinding){
 		for(int i = 0 ; i < addList.size() ; i++){
+			//追加ここ(島野)現在状態に追加する際に変数の具体化を行うようにした
 			theState.addElement(instantiateString((String)addList.elementAt(i),theBinding));
 		}
 		for(int i = 0 ; i < deleteList.size() ; i++){
+			//追加ここ(島野)現在状態から削除する際に変数の具体化を行うようにした
 			theState.removeElement(instantiateString((String)deleteList.elementAt(i),theBinding));
 		}
 		return theState;
