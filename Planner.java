@@ -166,7 +166,8 @@ public class Planner {
 		for(int i = 0; i < GoalPanel.goal.size(); i++){
 			goalList.addElement(GoalPanel.goal.get(i));
 		}
-
+		finalgoal = (Vector)goalList.clone();
+		
 		//変更:初期状態をInitPanelから読み込む
 		//Vector initialState = initInitialState();
 
@@ -292,6 +293,8 @@ public class Planner {
 		}
 
 		int index = ConflictResolution(theGoal,theCurrentState);
+		//System.out.println("index = "+index);
+		//System.out.println("operators.size="+operators.size());
 		Operator op = (Operator)operators.elementAt(index);
 		operators.removeElementAt(index);
 		operators.insertElementAt(op,0);
@@ -489,7 +492,7 @@ public class Planner {
 		}
 		if(goal[0].equals("handEmpty")){
 			String[] hold = ((String)theCurrentState.lastElement()).split(" ",0);
-			for(int i=0;i<finalgoal.size();++i){
+			for(int i=0;i<finalgoal.size();i++){
 				String[] fg = ((String)finalgoal.elementAt(i)).split(" ",0);
 				if(fg.length==3){
 					if(fg[0]==hold[1] && theCurrentState.contains("clear "+fg[2])){
