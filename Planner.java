@@ -1471,12 +1471,14 @@ class InitPanel extends JFrame implements ActionListener {
 		MyMouseListener listener2 = new MyMouseListener(label2);
 		MyMouseListener listener3 = new MyMouseListener(label3);
 
+		/*
 		label1.addMouseListener(listener1);
 		label1.addMouseMotionListener(listener1);
 		label2.addMouseListener(listener2);
 		label2.addMouseMotionListener(listener2);
 		label3.addMouseListener(listener3);
 		label3.addMouseMotionListener(listener3);
+*/
 
 		ok.addActionListener(this);
 		ok.setBounds(240,310,100,50);
@@ -1734,22 +1736,41 @@ class InitPanel extends JFrame implements ActionListener {
 	class MyMouseListener extends MouseAdapter{
 		int dx;
 		int dy;
-		int sx1,sx2,sx3;
-		int sy1,sy2,sy3;
+		int sx;
+		int sy;
+		//どこからぶつかったかを判定するために使用するフラグ
+		boolean x_min = false;
+		boolean x_max = false;
+		boolean y_min = false;
+		boolean y_max = false;
+		//何をもっているかを判別するフラグ
+		boolean aflag,bflag,cflag;
 
 		JLabel label;
 
 		MyMouseListener(JLabel a){
 			label = a;
+			//持っているものが何かを判別する
+			if(label.getX() == ax && label.getY() == ay){
+				aflag = true;
+			}else if(label.getX() == bx && label.getY() == by){
+				bflag = true;
+			}else if(label.getX() == cx && label.getY() == cy){
+				cflag = true;
+			}
 		}
 
 		public void mouseDragged(MouseEvent e) {
+			x_min = false;
+			x_max = false;
+			y_min = false;
+			y_max = false;
 			// マウスの座標から画像(ラベル)の左上の座標を取得する
 			int x = e.getXOnScreen() - dx;
 			int y = e.getYOnScreen() - dy;
 			//デバッグ用
-			System.out.println("x="+x);
-			System.out.println("y="+y);
+			//System.out.println("x="+x);
+			//System.out.println("y="+y);
 
 			//当たり判定		      
 			//画面外や地面の外に出ないための処理※holdingに行かない
@@ -1763,47 +1784,130 @@ class InitPanel extends JFrame implements ActionListener {
 				y = 240;
 
 			//持っているのがAであるとき
-			if(label.getX() == ax && label.getY() == ay){
-				if(x > label2.getX() + 48)
-					x = label2.getX() + 48;
+			if(aflag){
+				if(collision(x,y,bx,by)){
+					wherecollision(x,y,bx,by);
+					
+					System.out.println("x_max:"+x_max);
+					System.out.println("x_min:"+x_min);
+					System.out.println("y_max:"+y_max);
+					System.out.println("y_min:"+y_min);
+					System.out.println("");
+					
+					
+					if(y_max)
+						y = by - 48;
+					else if(y_min)
+						y = by + 48;
+					//左からぶつかった
+					else if(x_max)
+						x = bx - 48;					
+					//右からぶつかった
+					else if(x_min)
+						x = bx + 48;
+
+					
+				}
+				
+				if(collision(x,y,cx,cy)){
+					wherecollision(x,y,cx,cy);
+					if(y_max)
+						y = cy - 48;
+					else if(y_min)
+						y = cy + 48;
+					//左からぶつかった
+					else if(x_max)
+						x = cx - 48;					
+					//右からぶつかった
+					else if(x_min)
+						x = cx + 48;
+					
+					
+				}
+				
+				ax = x;
+				ay = y;
+
 			}
 
 			//持っているのがBであるとき
-			if(label.getX() == bx && label.getY() == by){
-				sx1 = Math.abs(label.getX() - label1.getX());
-				sy1 = Math.abs(label.getY() - label1.getY());
-				sx3 = Math.abs(label.getX() - label3.getX());
-				sy3 = Math.abs(label.getY() - label3.getY());
-				if(sx1 < 48 && sy1 <48){
-					x = ax;
-					y = ay-48;
+			if(bflag){
+				if(collision(x,y,ax,ay)){
+					wherecollision(x,y,ax,ay);
+					
+					if(y_max)
+						y = ay - 48;
+					else if(y_min)
+						y = ay + 48;
+					//左からぶつかった
+					else if(x_max)
+						x = ax - 48;					
+					//右からぶつかった
+					else if(x_min)
+						x = ax + 48;
+					
+					
 				}
-				if(sx3 < 48 && sy3 < 48){
-					x = cx;
-					y = cy-48;
+				
+				if(collision(x,y,cx,cy)){
+					wherecollision(x,y,cx,cy);
+					if(y_max)
+						y = cy - 48;
+					else if(y_min)
+						y = cy + 48;
+					//左からぶつかった
+					else if(x_max)
+						x = cx - 48;					
+					//右からぶつかった
+					else if(x_min)
+						x = cx + 48;
+					
+					
 				}
+				
+				
 				bx = x;
 				by = y;
 			}
-
-			//持っているのがCであるとき
-			if(label.getX() == cx && label.getY() == cy){
-				sx1 = Math.abs(label.getX() - label1.getX());
-				sy1 = Math.abs(label.getY() - label1.getY());
-				sx2 = Math.abs(label.getX() - label2.getX());
-				sy2 = Math.abs(label.getY() - label2.getY());
-				if(sx1 < 48 && sy1 <48){
-					x = ax;
-					y = ay-48;
+			
+			//持っているものがCであるとき
+			if(cflag){
+				if(collision(x,y,ax,ay)){
+					wherecollision(x,y,ax,ay);
+					if(y_max)
+						y = ay - 48;
+					else if(y_min)
+						y = ay + 48;
+					//左からぶつかった
+					else if(x_max)
+						x = ax - 48;					
+					//右からぶつかった
+					else if(x_min)
+						x = ax + 48;
+					
+					
 				}
-				if(sx2 < 48 && sy2 < 48){
-					x = bx;
-					y = by-48;
+				
+				if(collision(x,y,bx,by)){
+					wherecollision(x,y,bx,by);
+					if(y_max)
+						y = by - 48;
+					else if(y_min)
+						y = by + 48;
+					//左からぶつかった
+					else if(x_max)
+						x = bx - 48;					
+					//右からぶつかった
+					else if(x_min)
+						x = bx + 48;
+					
+					
 				}
+				
 				cx = x;
 				cy = y;
 			}
-
+			
 			label.setLocation(x, y);
 		}
 
@@ -1811,8 +1915,51 @@ class InitPanel extends JFrame implements ActionListener {
 			// 画面上でマウスで押した絶対座標からラベルの左上の座標の差を取って相対座標にする
 			dx = e.getXOnScreen() - label.getX();
 			dy= e.getYOnScreen() - label.getY();
+			x_max = false;
+			x_min = false;
+			y_max = false;
+			y_min = false;
+		}
+		
+		//当たり判定メソッド
+		boolean collision(int x,int y,int ox,int oy){
+			boolean ans = false;
+			
+			if(x+ 48 < ox){
+			}else if(ox + 48 < x){
+			}else if(y + 48 < oy){
+			}else if(oy + 48 < y){
+			}else{
+				ans = true;
+			}
+			return ans;
+		}
+		
+		//どういう衝突なのかを判定する
+		void wherecollision(int x,int y,int ox,int oy){
+			System.out.println("y:"+y);
+			System.out.println("oy:"+oy);
+			if(x + 48 > ox && x < ox && oy < y && y < oy + 48){
+				x_max = true;
+				System.out.println("1");
+			}
+			else if(x + 48 > ox && x < ox  && oy < y+ 48 && y + 48 < oy + 48){
+				x_max = true;
+				System.out.println("2");
+			}
+			
+			if(ox + 48 >  x && ox + 48 < x + 48 && oy < y && y < oy + 48)
+				x_min = true;
+			else if(ox + 48 >  x && ox + 48 < x + 48 && oy < y+ 48 && y + 48 < oy + 48)
+				x_min = true;
+			if(y + 48 > oy && y < oy && ((ox < x && x < ox + 48 ) || (ox < x+ 48 && x + 48 < ox + 48)))
+				y_max = true;
+			if(oy + 48 > y && oy < y && ((ox < x && x < ox + 48 ) || (ox < x+ 48 && x + 48 < ox + 48)))
+				y_min = true;
 		}
 	}
+	
+
 }
 
 //Goal状態を変更する画面
@@ -1871,6 +2018,7 @@ class GoalPanel extends JFrame implements ActionListener{
 		mode.setFont(new Font("ＭＳ ゴシック",Font.BOLD,20));
 		mode.setBounds(5,50,320,20);
 		mode.setText("ゴール目標を設定してください");
+		/*
 		// リスナーを登録
 		MyMouseListener listener1 = new MyMouseListener(label1);
 		MyMouseListener listener2 = new MyMouseListener(label2);
@@ -1881,6 +2029,7 @@ class GoalPanel extends JFrame implements ActionListener{
 		label2.addMouseMotionListener(listener2);
 		label3.addMouseListener(listener3);
 		label3.addMouseMotionListener(listener3);
+		*/
 		ok.addActionListener(this);
 		ok.setBounds(240,310,100,50);
 		put.addActionListener(this);
@@ -2165,9 +2314,14 @@ class GoalPanel extends JFrame implements ActionListener{
 				y = 240;
 
 			//持っているのがAであるとき
-			if(label.getX() == ax && label.getY() == ay){
-				if(x > label2.getX() + 48)
-					x = label2.getX() + 48;
+			if(x == ax && y == ay){
+				if(x <= bx && bx <= x + 48 && y <= by && by <= y + 48 ){
+					x = bx;
+					y = by;
+				}
+					
+				ax = x;
+				ay = y;
 			}
 
 			//持っているのがBであるとき
@@ -2208,12 +2362,13 @@ class GoalPanel extends JFrame implements ActionListener{
 
 			label.setLocation(x, y);
 		}
-
+		
 		public void mousePressed(MouseEvent e) {
 			// 画面上でマウスで押した絶対座標からラベルの左上の座標の差を取って相対座標にする
 			dx = e.getXOnScreen() - label.getX();
 			dy= e.getYOnScreen() - label.getY();
 		}
+		
 	}
 
 	void goalread(){
